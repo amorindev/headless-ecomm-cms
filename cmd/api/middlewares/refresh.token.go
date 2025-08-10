@@ -1,4 +1,3 @@
-
 package middlewares
 
 import (
@@ -6,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"com.fernando/cmd/api/message"
+	"github.com/amorindev/headless-ecomm-cms/cmd/api/message"
 )
 
 func (m *AuthMiddleware) RefreshTokenMdw(next http.HandlerFunc) http.HandlerFunc {

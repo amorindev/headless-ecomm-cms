@@ -1,6 +1,6 @@
 package middlewares
 
-import "com.fernando/internal/auth"
+import "github.com/amorindev/headless-ecomm-cms/internal/auth"
 
 type AuthMiddleware struct {
 	AuthSrv *auth.TokenSrv

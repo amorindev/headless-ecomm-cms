@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"com.fernando/cmd/api/message"
+	"github.com/amorindev/headless-ecomm-cms/cmd/api/message"
 )
 
 func (m *AuthMiddleware) AccessTokenMdw(next http.HandlerFunc) http.HandlerFunc {
