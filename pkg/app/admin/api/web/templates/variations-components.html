@@ -1,0 +1,277 @@
+{{ define "variations" }}
+
+<style>
+  h2 {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #27272a;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+  }
+
+  form#variation-form {
+    display: flex;
+    max-width: 480px;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  form#variation-form input[type="text"],
+  form#variation-form input[type="color"] {
+    flex: 1;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.125rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+
+  form#variation-form input[type="text"]:focus,
+  form#variation-form input[type="color"]:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+  }
+
+  form#variation-form button {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.8rem;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: background-color 0.3s ease;
+  }
+
+  form#variation-form button:hover,
+  form#variation-form button:focus {
+    background-color: #4f46e5;
+    outline: none;
+  }
+
+  ul#variation-list {
+    max-width: 600px;
+    padding: 0;
+    list-style: none;
+  }
+
+  ul#variation-list > li {
+    background: white;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.07);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  ul#variation-list > li > strong {
+    font-size: 1.3rem;
+    display: block;
+    margin-bottom: 1rem;
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  ul#variation-list ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  ul#variation-list ul li {
+    display: flex;
+    justify-content: space-between;
+    background: #f3f4f6;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  ul#variation-list ul li button {
+    background: #ef4444;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+  }
+
+  ul#variation-list ul li button:hover,
+  ul#variation-list ul li button:focus {
+    background: #b91c1c;
+    outline: none;
+  }
+
+  ul#variation-list form {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  ul#variation-list form input[type="text"],
+  ul#variation-list form input[type="color"] {
+    flex: 1 1 auto;
+    padding: 0.65rem 1rem;
+    font-size: 1rem;
+    border: 1.8px solid #cbd5e1;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+
+  ul#variation-list form input[type="text"]:focus,
+  ul#variation-list form input[type="color"]:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
+  }
+
+  ul#variation-list form button {
+    flex-shrink: 0;
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+
+  ul#variation-list form button:hover,
+  ul#variation-list form button:focus {
+    background-color: #4f46e5;
+    outline: none;
+  }
+  ul#variation-list form input[type="color"] {
+    width: 50px;
+    height: 40px;
+    padding: 0;
+    cursor: pointer;
+  }
+</style>
+
+<h2>Variations</h2>
+<form id="variation-form">
+  <input
+    type="text"
+    name="name"
+    placeholder="New variation name (e.g. Color, Size)"
+    required
+  />
+  <button type="submit">Add Variation</button>
+</form>
+
+<ul id="variation-list"></ul>
+
+<script>
+  async function fetchVariations() {
+    const res = await fetch(`${API_BASE}/v1/variations`);
+    const data = await res.json();
+
+    const list = document.getElementById("variation-list");
+    list.innerHTML = "";
+
+    data.forEach((variation) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+      <strong>${variation.name}</strong>
+      <ul id="opts-${variation.id}"></ul>
+      <form onsubmit="createOption(event, '${
+        variation.id
+      }', '${variation.name.toLowerCase()}')">
+        <input type="text" name="name" placeholder="Option name (e.g. XL, Rojo)" required />
+        ${
+          variation.name.toLowerCase() === "color"
+            ? `<input type="color" name="value" required />`
+            : `<input type="text" name="value" placeholder="Value (optional)" />`
+        }
+        <button type="submit">Add Option</button>
+      </form>
+    `;
+
+      const optionsList = li.querySelector(`#opts-${variation.id}`);
+
+      if (Array.isArray(variation.options)) {
+        variation.options.forEach((opt) => {
+          const optLi = document.createElement("li");
+          const isColor = variation.name.toLowerCase() === "color";
+
+          optLi.innerHTML = `
+    ${opt.name} 
+    ${
+      isColor
+        ? `<span style="
+            display:inline-block;
+            width:20px;
+            height:20px;
+            background-color:${opt.value};
+            border:1px solid #ccc;
+            border-radius:4px;
+            margin-left:8px;
+          "></span>`
+        : `- ${opt.value || ""}`
+    }
+    <button onclick="deleteOption('${opt._id}')">X</button>
+  `;
+          optionsList.appendChild(optLi);
+        });
+      }
+
+      list.appendChild(li);
+    });
+  }
+
+  async function createVariation(e) {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+
+    await fetch(`${API_BASE}/v1/variations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+
+    form.reset();
+    fetchVariations();
+  }
+
+  async function deleteOption(id) {
+    if (!confirm("Are you sure you want to delete this option?")) return;
+
+    await fetch(`${API_BASE}/v1/var-options/${id}`, {
+      method: "DELETE",
+    });
+
+    fetchVariations();
+  }
+
+  async function createOption(e, variationId, type) {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const value = form.value ? form.value.value : "";
+
+    await fetch(`${API_BASE}/v1/var-options/${variationId}/options`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, value }),
+    });
+
+    form.reset();
+
+    fetchVariations();
+  }
+
+  document
+    .getElementById("variation-form")
+    .addEventListener("submit", createVariation);
+  fetchVariations();
+</script>
+{{ end }}

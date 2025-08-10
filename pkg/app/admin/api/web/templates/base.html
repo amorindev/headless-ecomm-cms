@@ -1,0 +1,125 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{template "title" .}} - Admin Panel</title>
+    <style>
+      /* RESET */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        min-height: 100vh;
+        background-color: #f9fafb;
+        color: #1f2937;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 260px;
+        background-color: #27272a; /* Dark gray */
+        color: #e0e0e0;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        box-shadow: 2px 0 5px rgb(0 0 0 / 0.1);
+        user-select: none;
+      }
+
+      .sidebar h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 2rem;
+        color: #a5b4fc; /* Indigo-300 */
+      }
+
+      .sidebar a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.7rem 1rem;
+        border-radius: 6px;
+        transition: background-color 0.25s ease;
+      }
+
+      .sidebar a:hover,
+      .sidebar a:focus {
+        background-color: #4f46e5; /* Indigo-600 */
+        color: white;
+        outline: none;
+      }
+
+      /* MAIN CONTENT */
+      .main {
+        flex: 1;
+        padding: 2.5rem 3rem;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #27272a;
+      }
+
+      footer {
+        margin-top: auto;
+        text-align: center;
+        padding: 1rem 0;
+        color: #64748b; /* slate-400 */
+        font-size: 0.875rem;
+        border-top: 1px solid #e0e0e0;
+        user-select: none;
+      }
+
+      a {
+        color: #4f46e5;
+        text-decoration: none;
+        transition: text-decoration 0.3s ease;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+    <script>
+      const API_BASE = "{{ .ApiBaseUrl }}";
+    </script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h1>Admin Panel</h1>
+      <a href="/v1/admin/categories">Categories & Variations</a>
+      <a href="/v1/admin/products">Products</a>
+      <a href="/v1/admin/onboardings">Onboardings</a>
+    </div>
+
+    <div class="main">
+      <header>
+        <h2>{{template "title" .}}</h2>
+      </header>
+
+      {{ block "content" . }}{{ end }}
+    </div>
+  </body>
+</html>
+{{end}}

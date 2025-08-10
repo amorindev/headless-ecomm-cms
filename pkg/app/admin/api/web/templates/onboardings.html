@@ -1,0 +1,172 @@
+{{ define "title" }}Onboardings{{ end }} {{ define "content" }}
+<style>
+  form#upload-onboardings-form {
+    max-width: 480px;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  form#upload-onboardings-form label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #27272a;
+  }
+
+  form#upload-onboardings-form input[type="file"] {
+    padding: 0.4rem;
+    border-radius: 6px;
+    border: 1.8px solid #cbd5e1;
+    transition: border-color 0.3s ease;
+  }
+
+  form#upload-onboardings-form input[type="file"]:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+  }
+
+  form#upload-onboardings-form button {
+    align-self: start;
+    background-color: #6366f1;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.8rem;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: background-color 0.3s ease;
+  }
+
+  form#upload-onboardings-form button:hover,
+  form#upload-onboardings-form button:focus {
+    background-color: #4f46e5;
+    outline: none;
+  }
+
+  ul#onboarding-list {
+    list-style: none;
+    max-width: 720px;
+  }
+
+  ul#onboarding-list li {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  ul#onboarding-list li img {
+    max-width: 180px;
+    max-height: 120px;
+    border-radius: 8px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  ul#onboarding-list li > div {
+    flex: 1;
+  }
+
+  ul#onboarding-list h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+    color: #27272a;
+    font-weight: 700;
+  }
+
+  ul#onboarding-list p {
+    margin-bottom: 0.5rem;
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  ul#onboarding-list p b {
+    color: #374151;
+  }
+</style>
+<form id="upload-onboardings-form" enctype="multipart/form-data">
+  <label for="zip">Upload Onboardings (ZIP):</label>
+  <input type="file" id="zip" name="file" accept=".zip" required />
+  <button type="submit">Upload</button>
+</form>
+
+<ul id="onboarding-list"></ul>
+
+<script>
+  async function fetchOnboardings() {
+    const list = document.getElementById("onboarding-list");
+    list.innerHTML = "<li>Loading onboardings...</li>";
+
+    try {
+      const res = await fetch(`${API_BASE}/v1/onboardings`);
+
+      if (!res.ok) {
+        list.innerHTML = `<li>Failed to load onboardings. (${res.status})</li>`;
+        return;
+      }
+
+      const data = await res.json();
+
+      if (
+        !data.onboardings ||
+        !Array.isArray(data.onboardings) ||
+        data.onboardings.length === 0
+      ) {
+        list.innerHTML = "<li>No onboardings available.</li>";
+        return;
+      }
+
+      list.innerHTML = "";
+
+      data.onboardings.forEach((ob) => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <h3>${ob.title}</h3>
+          <p>${ob.text}</p>
+          <img src="${ob.img_url}" width="150" />
+          <p><b>Expires:</b> ${new Date(ob.expires_at).toLocaleString()}</p>
+          <p><b>Created:</b> ${new Date(ob.created_at).toLocaleString()}</p>
+        `;
+
+        list.appendChild(li);
+      });
+    } catch {
+      list.innerHTML = "<li>Unexpected error loading onboardings.</li>";
+    }
+  }
+
+  document
+    .getElementById("upload-onboardings-form")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/onboardings/load-from-zip`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          alert("ZIP uploaded successfully!");
+          await fetchOnboardings();
+        } else {
+          alert("Error uploading ZIP");
+        }
+      } catch {
+        alert("Network error while uploading ZIP");
+      }
+    });
+
+  fetchOnboardings();
+</script>
+
+{{ end }}

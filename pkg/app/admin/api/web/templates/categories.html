@@ -1,0 +1,169 @@
+{{ define "title" }}Categories and variations{{ end }} {{ define "content" }}
+<style>
+  /* Formulario creación */
+  form#create-form {
+    display: flex;
+    max-width: 480px;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  form#create-form input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.125rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+
+  form#create-form input[type="text"]:focus {
+    outline: none;
+    border-color: #6366f1; /* Indigo-500 */
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+  }
+
+  form#create-form button {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.8rem;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: background-color 0.3s ease;
+  }
+
+  form#create-form button:hover,
+  form#create-form button:focus {
+    background-color: #4f46e5; /* Indigo-600 */
+    outline: none;
+  }
+
+  /* Lista */
+  ul#category-list {
+    max-width: 480px;
+    list-style: none;
+  }
+
+  ul#category-list li {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+  }
+
+  ul#category-list li input[type="text"] {
+    flex: 1;
+    font-size: 1rem;
+    padding: 0.55rem 1rem;
+    border: 1.8px solid #cbd5e1;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+
+  ul#category-list li input[type="text"]:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
+  }
+
+  ul#category-list li button {
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  ul#category-list li button:first-of-type {
+    background-color: #10b981; /* green-500 */
+    color: white;
+  }
+  ul#category-list li button:first-of-type:hover,
+  ul#category-list li button:first-of-type:focus {
+    background-color: #059669;
+    outline: none;
+  }
+
+  ul#category-list li button:last-of-type {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+  }
+  ul#category-list li button:last-of-type:hover,
+  ul#category-list li button:last-of-type:focus {
+    background-color: #b91c1c;
+    outline: none;
+  }
+</style>
+
+<form id="create-form">
+  <input type="text" name="name" placeholder="New category" required />
+  <button type="submit">Add</button>
+</form>
+<ul id="category-list"></ul>
+
+<script>
+  async function fetchCategories() {
+    const res = await fetch(`${API_BASE}/v1/categories`);
+    const data = await res.json();
+
+    const list = document.getElementById("category-list");
+    list.innerHTML = "";
+    data.forEach((cat) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+          <input type="text" value="${cat.name}" data-id="${cat.id}" />
+          <button onclick="updateCategory('${cat.id}')">Update</button>
+          <button onclick="deleteCategory('${cat.id}')">Delete</button>
+        `;
+      list.appendChild(li);
+    });
+  }
+
+  async function createCategory(e) {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+
+    await fetch(`${API_BASE}/v1/categories`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    form.reset();
+    fetchCategories();
+  }
+
+  async function updateCategory(id) {
+    const input = document.querySelector(`input[data-id="${id}"]`);
+    const name = input.value;
+
+    await fetch(`${API_BASE}/v1/categories/` + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    fetchCategories();
+  }
+
+  async function deleteCategory(id) {
+    await fetch(`${API_BASE}/v1/categories/` + id, {
+      method: "DELETE",
+    });
+    fetchCategories();
+  }
+
+  document
+    .getElementById("create-form")
+    .addEventListener("submit", createCategory);
+  fetchCategories();
+</script>
+{{ template "variations" . }} {{ end }}
