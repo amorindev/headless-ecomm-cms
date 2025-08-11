@@ -17,19 +17,19 @@ func NewClient() *MinioClient {
 	endpoint := os.Getenv("MINIO_ENDPOINT")
 	accessKeyID := os.Getenv("MINIO_ACCESS_KEY")
 	secretKeyID := os.Getenv("MINIO_SECRET_KEY")
-	useSSL := os.Getenv("MINIO_SECURE")
+	/* useSSL := os.Getenv("MINIO_SECURE")
 
 	var useSSLbool bool
 	if useSSL == "true" {
 		useSSLbool = true
 	} else {
 		useSSLbool = false
-	}
+	} */
 
 	// * Initialize minio client
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretKeyID, ""),
-		Secure: useSSLbool,
+		Secure: false,
 	})
 
 	if err != nil {
