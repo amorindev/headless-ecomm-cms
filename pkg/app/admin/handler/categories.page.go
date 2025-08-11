@@ -10,7 +10,7 @@ func (h *Handler) CategoriesPage(w http.ResponseWriter, r *http.Request) {
 	files := []string{
 		"pkg/app/admin/api/web/templates/base.html",
 		"pkg/app/admin/api/web/templates/categories.html",
-		"pkg/app/admin/api/web/templates/variations-component.html",
+		"pkg/app/admin/api/web/templates/variations-components.html",
 	}
 
 	data := struct {
