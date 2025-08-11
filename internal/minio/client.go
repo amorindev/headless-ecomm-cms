@@ -2,7 +2,6 @@ package minio
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -30,7 +29,7 @@ func NewClient() *MinioClient {
 	// * Initialize minio client
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretKeyID, ""),
-		Secure: false,
+		Secure: true,
 	})
 
 	if err != nil {
@@ -54,7 +53,7 @@ func (client *MinioClient) CreateStorage() {
 	if !found {
 		err := client.Client.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			fmt.Printf("create Storage failed: %s\n", err.Error())
+			log.Fatalf("create Storage failed: %s\n", err.Error())
 		}
 	}
 }
