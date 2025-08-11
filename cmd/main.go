@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	httpSrv "github.com/amorindev/headless-ecomm-cms/cmd/api/server"
@@ -15,9 +14,9 @@ func main() {
 	} */
 
 	hsp := os.Getenv("HTTP_SERVER_PORT")
-	if hsp == "" {
+	/* if hsp == "" {
 		log.Fatal("environment variable HTTP_SERVER_PORT is not set")
-	}
+	} */
 
 	httpServer := httpSrv.NewHttpServer(hsp)
 	httpServer.Start()
