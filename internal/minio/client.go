@@ -2,6 +2,7 @@ package minio
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -53,7 +54,7 @@ func (client *MinioClient) CreateStorage() {
 	if !found {
 		err := client.Client.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{})
 		if err != nil {
-			log.Fatalf("create Storage failed: %s\n", err.Error())
+			fmt.Printf("create Storage failed: %s\n", err.Error())
 		}
 	}
 }
