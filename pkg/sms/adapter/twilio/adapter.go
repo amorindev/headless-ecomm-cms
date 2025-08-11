@@ -9,12 +9,12 @@ var _ port.SmsAdp = &Adapter{}
 
 type Adapter struct {
 	TwilioClient *twilio.RestClient
-	FromNumber string
+	FromNumber   string
 }
 
 func NewTwilioAdapter(client *twilio.RestClient, from string) *Adapter {
 	return &Adapter{
 		TwilioClient: client,
-		FromNumber: from,
+		FromNumber:   from,
 	}
 }

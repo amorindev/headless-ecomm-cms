@@ -3,6 +3,7 @@ package port
 import (
 	"context"
 
+	"github.com/amorindev/headless-ecomm-cms/pkg/app/users/domain"
 )
 
 type AdminRepo interface {

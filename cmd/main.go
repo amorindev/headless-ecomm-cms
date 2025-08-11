@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	httpSrv "com.fernando/cmd/api/server"
+	httpSrv "github.com/amorindev/headless-ecomm-cms/cmd/api/server"
 	"github.com/joho/godotenv"
 )
 

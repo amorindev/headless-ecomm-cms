@@ -49,10 +49,7 @@ func (client *MinioClient) CreateStorage() {
 		log.Fatal("environment variable MINIO_BUCKET_NAME is not set")
 	}
 
-	found, err := client.Client.BucketExists(context.Background(), bucketName)
-	if err != nil {
-		log.Fatalf("failed to check if bucket %q exists: %s", bucketName, err.Error())
-	}
+	found, _ := client.Client.BucketExists(context.Background(), bucketName)
 	if !found {
 		err := client.Client.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{})
 		if err != nil {

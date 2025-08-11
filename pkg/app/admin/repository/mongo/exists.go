@@ -1,5 +1,11 @@
 package mongo
 
+import (
+	"context"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
 func (r *Repository) Exists(ctx context.Context, roleAdminID string) (bool, error) {
 
 	oID, err := bson.ObjectIDFromHex(roleAdminID)
@@ -15,7 +21,7 @@ func (r *Repository) Exists(ctx context.Context, roleAdminID string) (bool, erro
 
 	count, err := r.UserColl.CountDocuments(ctx, filter)
 	if err != nil {
-	  return  false, err
+		return false, err
 	}
 	return count > 0, nil
 

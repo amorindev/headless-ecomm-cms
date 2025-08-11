@@ -1,6 +1,4 @@
-package v1
-
-
+package server
 
 import (
 	"log"
@@ -8,7 +6,7 @@ import (
 
 	"time"
 
-	v1 "com.fernando/cmd/api/server/v1"
+	v1 "github.com/amorindev/headless-ecomm-cms/cmd/api/server/v1"
 )
 
 type HttpServer struct {

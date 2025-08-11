@@ -9,12 +9,12 @@ var _ port.EmailAdapter = &ResendAdapter{}
 
 type ResendAdapter struct {
 	Client *resend.Client
-	Form string
+	Form   string
 }
 
-func NewAdapter(client *resend.Client, from string) *ResendAdapter{
+func NewAdapter(client *resend.Client, from string) *ResendAdapter {
 	return &ResendAdapter{
 		Client: client,
-		Form: from,
+		Form:   from,
 	}
 }

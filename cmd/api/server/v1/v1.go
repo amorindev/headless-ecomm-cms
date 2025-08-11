@@ -7,59 +7,51 @@ import (
 	"net/http"
 	"os"
 
-	"com.fernando/cmd/api/middlewares"
-	"com.fernando/internal/minio"
-	mongoClient "com.fernando/internal/mongo"
-	config "com.fernando/internal/mongo/constants"
-	resendClient "com.fernando/internal/resend"
-
-	"com.fernando/internal/twilio"
-
-	"com.fernando/internal/auth"
-	"com.fernando/pkg/app/admin/api"
-	adminHandler "com.fernando/pkg/app/admin/handler"
-	addressHandler "com.fernando/pkg/app/ecomm/addresses/handler"
-	addressRepository "com.fernando/pkg/app/ecomm/addresses/repository/mongo"
-	addressService "com.fernando/pkg/app/ecomm/addresses/service"
-	categoryHandler "com.fernando/pkg/app/ecomm/categories/handler"
-	categoryInitializer "com.fernando/pkg/app/ecomm/categories/initializer"
-	categoryRepository "com.fernando/pkg/app/ecomm/categories/repository/mongo"
-	categoryService "com.fernando/pkg/app/ecomm/categories/service"
-	productHandler "com.fernando/pkg/app/ecomm/products/handler"
-	productService "com.fernando/pkg/app/ecomm/products/service"
-	varOptInitializer "com.fernando/pkg/app/ecomm/var-options/initializer"
-	"com.fernando/pkg/app/ecomm/var-options/repository/mongo"
-	variationHandler "com.fernando/pkg/app/ecomm/variations/handler"
-	variationInitializer "com.fernando/pkg/app/ecomm/variations/initializer"
-	variationRepository "com.fernando/pkg/app/ecomm/variations/repository/mongo"
-	variationService "com.fernando/pkg/app/ecomm/variations/service"
-	onboardingHandler "com.fernando/pkg/app/onboardings/handler"
-	onboardingRepository "com.fernando/pkg/app/onboardings/repository/mongo"
-	onboardingService "com.fernando/pkg/app/onboardings/service"
-	otpMongo "com.fernando/pkg/app/otp-codes/repository/mongo"
-	phoneHandler "com.fernando/pkg/app/phones/handler"
-	phoneRepository "com.fernando/pkg/app/phones/repository/mongo"
-	phoneService "com.fernando/pkg/app/phones/service"
-
-	twilioAdapter "com.fernando/pkg/sms/adapter/twilio"
-	twilioService "com.fernando/pkg/sms/service"
-
-	authMethodHandler "com.fernando/pkg/app/auth-methods/handler"
-	userMongo "com.fernando/pkg/app/users/repository/mongo"
-
-	authMethodSrv "com.fernando/pkg/app/auth-methods/service"
-
-	productRepository "com.fernando/pkg/app/ecomm/products/repository/mongo"
-
-	roleInitializer "com.fernando/pkg/app/roles/initializer"
-	roleMongo "com.fernando/pkg/app/roles/repository/mongo"
-	sessionMongo "com.fernando/pkg/app/sessions/repository/mongo"
-
-	sessionSrv "com.fernando/pkg/app/sessions/service"
-	resendAdapter "com.fernando/pkg/email/adapter/resend"
-	emailService "com.fernando/pkg/email/service"
-	minioAdapter "com.fernando/pkg/file-storage/minio/adapter"
-	fileStgService "com.fernando/pkg/file-storage/service"
+	"github.com/amorindev/headless-ecomm-cms/cmd/api/middlewares"
+	"github.com/amorindev/headless-ecomm-cms/internal/auth"
+	"github.com/amorindev/headless-ecomm-cms/internal/minio"
+	mongoClient "github.com/amorindev/headless-ecomm-cms/internal/mongo"
+	"github.com/amorindev/headless-ecomm-cms/internal/mongo/constants"
+	resendClient "github.com/amorindev/headless-ecomm-cms/internal/resend"
+	twilioClient "github.com/amorindev/headless-ecomm-cms/internal/twilio"
+	"github.com/amorindev/headless-ecomm-cms/pkg/app/admin/api"
+	adminHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/admin/handler"
+	authMethodHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/auth-methods/handler"
+	authMethodService "github.com/amorindev/headless-ecomm-cms/pkg/app/auth-methods/service"
+	addressHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/addresses/handler"
+	addressRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/addresses/repository/mongo"
+	addressService "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/addresses/service"
+	categoryHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/categories/handler"
+	categoryInitializer "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/categories/initializer"
+	categoryRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/categories/repository/mongo"
+	categoryService "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/categories/service"
+	productHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/products/handler"
+	productRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/products/repository/mongo"
+	productService "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/products/service"
+	varOptInitializer "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/var-options/initializer"
+	varOptRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/var-options/repository/mongo"
+	variationHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/variations/handler"
+	variationInitializer "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/variations/initializer"
+	variationRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/variations/repository/mongo"
+	variationService "github.com/amorindev/headless-ecomm-cms/pkg/app/ecomm/variations/service"
+	onboardingHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/onboardings/handler"
+	onboardingRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/onboardings/repository/mongo"
+	onboardingService "github.com/amorindev/headless-ecomm-cms/pkg/app/onboardings/service"
+	otpCodeRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/otp-codes/repository/mongo"
+	phoneHandler "github.com/amorindev/headless-ecomm-cms/pkg/app/phones/handler"
+	phoneRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/phones/repository/mongo"
+	phoneService "github.com/amorindev/headless-ecomm-cms/pkg/app/phones/service"
+	roleInitializer "github.com/amorindev/headless-ecomm-cms/pkg/app/roles/initializer"
+	roleRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/roles/repository/mongo"
+	sessionRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/sessions/repository/mongo"
+	sessionService "github.com/amorindev/headless-ecomm-cms/pkg/app/sessions/service"
+	userRepository "github.com/amorindev/headless-ecomm-cms/pkg/app/users/repository/mongo"
+	resendAdapter "github.com/amorindev/headless-ecomm-cms/pkg/email/adapter/resend"
+	emailService "github.com/amorindev/headless-ecomm-cms/pkg/email/service"
+	minioAdapter "github.com/amorindev/headless-ecomm-cms/pkg/file-storage/minio/adapter"
+	fileStgService "github.com/amorindev/headless-ecomm-cms/pkg/file-storage/service"
+	twilioAdapter "github.com/amorindev/headless-ecomm-cms/pkg/sms/adapter/twilio"
+	smsService "github.com/amorindev/headless-ecomm-cms/pkg/sms/service"
 )
 
 func New() http.Handler {
@@ -90,7 +82,7 @@ func New() http.Handler {
 	minioClient.CreateStorage()
 
 	// ** Sms - Twilio
-	twilioClient := twilio.NewClient()
+	twilioClient := twilioClient.NewClient()
 
 	// * Adapters layer
 	minioAdp := minioAdapter.NewAdapter(minioClient.Client)
@@ -100,57 +92,57 @@ func New() http.Handler {
 	// * Services layer
 	fileStgSrv := fileStgService.NewFileStgSrv(minioAdp)
 	emailSrv := emailService.NewEmailSrv(resendAdapter)
-	twilioSrv := twilioService.NewSmsSrv(twilioAdp)
+	twilioSrv := smsService.NewSmsSrv(twilioAdp)
 
 	// * Collections
-	roleColl := mongoDB.Collection(config.CollRoles)
-	varOptColl := mongoDB.Collection(config.CollVarOptions)
-	variationColl := mongoDB.Collection(config.CollVariations)
-	categoryColl := mongoDB.Collection(config.CollCategories)
-	productsColl := mongoDB.Collection(config.CollProducts)
-	otpColl := mongoDB.Collection(config.CollOtpCodes)
-	userColl := mongoDB.Collection(config.CollUsers)
-	mfaFaSmsColl := mongoDB.Collection(config.CollMfaFaSms)
-	phoneColl := mongoDB.Collection(config.CollPhones)
-	sessionColl := mongoDB.Collection(config.CollSessions)
-	addressColl := mongoDB.Collection(config.CollAddress)
-	onboardingColl := mongoDB.Collection(config.CollOnboardings)
+	roleColl := mongoDB.Collection(constants.CollRoles)
+	varOptColl := mongoDB.Collection(constants.CollVarOptions)
+	variationColl := mongoDB.Collection(constants.CollVariations)
+	categoryColl := mongoDB.Collection(constants.CollCategories)
+	productsColl := mongoDB.Collection(constants.CollProducts)
+	otpColl := mongoDB.Collection(constants.CollOtpCodes)
+	userColl := mongoDB.Collection(constants.CollUsers)
+	mfaFaSmsColl := mongoDB.Collection(constants.CollMfaFaSms)
+	phoneColl := mongoDB.Collection(constants.CollPhones)
+	sessionColl := mongoDB.Collection(constants.CollSessions)
+	addressColl := mongoDB.Collection(constants.CollAddress)
+	onboardingColl := mongoDB.Collection(constants.CollOnboardings)
 
 	// * Repositories
-	variationRepo := variationRepository.NewRepository(mongoConn.DB, variationColl)
-	varOptRepo := mongo.NewRepository(mongoConn.DB, varOptColl)
+	variationRepo := variationRepository.NewVariationRepo(mongoConn.DB, variationColl)
+	varOptRepo := varOptRepository.NewVarOptRepo(mongoConn.DB, varOptColl)
 	categoryRepo := categoryRepository.NewCategoryRepo(mongoConn.DB, categoryColl)
-	productRepo := productRepository.NewRepository(mongoConn.DB, productsColl)
-	userMongoRepo := userMongo.NewUserRepo(mongoConn.DB, userColl, mfaFaSmsColl)
-	otpRepository := otpMongo.NewRepository(mongoConn.DB, otpColl)
-	phoneRepo := phoneRepository.NewRepository(mongoConn.DB, phoneColl)
-	sessionMongoRepo := sessionMongo.NewRepository(mongoConn.DB, sessionColl)
-	roleMongoRepo := roleMongo.NewRepository(mongoConn.DB, roleColl)
+	productRepo := productRepository.NewProductRepo(mongoConn.DB, productsColl)
+	userMongoRepo := userRepository.NewUserRepo(mongoConn.DB, userColl, mfaFaSmsColl)
+	otpCodeRepo := otpCodeRepository.NewOtpCodeRepo(mongoConn.DB, otpColl)
+	phoneRepo := phoneRepository.NewPhoneRepository(mongoConn.DB, phoneColl)
+	sessionMongoRepo := sessionRepository.NewSessionRepo(mongoConn.DB, sessionColl)
+	roleMongoRepo := roleRepository.NewRoleRepo(mongoConn.DB, roleColl)
 	addressRepo := addressRepository.NewAddressRepo(mongoConn.DB, addressColl)
-	onboardingRepo := onboardingRepository.NewRepository(mongoConn.DB, onboardingColl)
+	onboardingRepo := onboardingRepository.NewOnboardingRepo(mongoConn.DB, onboardingColl)
 
 	// * Services
 	authSrv := auth.NewTokenSrv(accessSecret, refreshSecret, issuer)
-	variationSrv := variationService.NewService(variationRepo, varOptRepo)
-	productSrv := productService.NewService(productRepo, categoryRepo, fileStgSrv)
-	categorySrv := categoryService.NewService(categoryRepo, productRepo)
-	sessionSrv := sessionSrv.NewSessionSrv(sessionMongoRepo, authSrv)
-	authMethodSrv := authMethodSrv.NewService(userMongoRepo, roleMongoRepo, otpRepository, sessionMongoRepo, phoneRepo, sessionSrv, emailSrv, twilioSrv)
-	phoneSrv := phoneService.NewService(phoneRepo)
-	addressSrv := addressService.NewService(addressRepo)
-	onboardingSrv := onboardingService.NewService(onboardingRepo, fileStgSrv)
+	variationSrv := variationService.NewVariationSrv(variationRepo, varOptRepo)
+	productSrv := productService.NewProductSrv(productRepo, categoryRepo, fileStgSrv)
+	categorySrv := categoryService.NewCategorySrv(categoryRepo, productRepo)
+	sessionSrv := sessionService.NewSessionSrv(sessionMongoRepo, authSrv)
+	authMethodSrv := authMethodService.NewAuthMethodSrv(userMongoRepo, roleMongoRepo, otpCodeRepo, sessionMongoRepo, phoneRepo, sessionSrv, emailSrv, twilioSrv)
+	phoneSrv := phoneService.NewPhoneService(phoneRepo)
+	addressSrv := addressService.NewAddressSrv(addressRepo)
+	onboardingSrv := onboardingService.NewOnboardingSrv(onboardingRepo, fileStgSrv)
 
 	// * Middlewares
 	authMdw := middlewares.NewAuthMdw(authSrv)
 
 	// * Handlers
 	variationHandler.NewHandler(v1, variationSrv)
-	productHandler.NewHandler(v1, productSrv, categoryRepo, varOptRepo, authMdw)
-	categoryHandler.NewHandler(v1, categorySrv)
-	authMethodHandler.NewHandler(v1, authMethodSrv, authMdw)
-	phoneHandler.NewHandler(v1, phoneSrv, authMdw)
-	addressHandler.NewHandler(v1, addressSrv, authMdw)
-	onboardingHandler.NewHandler(v1, onboardingSrv, onboardingRepo, authMdw)
+	productHandler.NewProductHdl(v1, productSrv, categoryRepo, varOptRepo, authMdw)
+	categoryHandler.NewCategoryHdl(v1, categorySrv)
+	authMethodHandler.NewAuthMethodHdl(v1, authMethodSrv, authMdw)
+	phoneHandler.NewPhoneHdl(v1, phoneSrv, authMdw)
+	addressHandler.NewAddressHdl(v1, addressSrv, authMdw)
+	onboardingHandler.NewOnboardingHdl(v1, onboardingSrv, onboardingRepo, authMdw)
 
 	// * Initializers
 	variationItz := variationInitializer.NewVariationItz(variationRepo)
